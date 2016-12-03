@@ -124,6 +124,7 @@ class CDeck : public CCardSet {
     SCard Pop() { return RemoveCard(Num-1); }
     bool IsEmpty() { return Num==0; }
     bool IsNotLast() { return Num > 1; }
+//카드남은 데크 두는 곳  
     void Draw(){
 		gotoxy(sx,sy);
         cout << "|???| ";
@@ -164,10 +165,8 @@ int main() {
 	cout << "\n 랜덤으로 생성되는 카드:";
  	cout << GCard[rand()%52] <<endl;
  	
-//	cout << CDeck::Draw()
-		gotoxy(30,10);
-        cout << "|???| ";
-    
+
+//카드패를 놓아두는 곳    
 	CDeck *Deck = new CDeck(40,20);
 	Deck->Draw();
 //    cout << Deck.Draw()<<endl;
