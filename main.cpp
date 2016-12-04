@@ -13,17 +13,17 @@ const int CardGap=4;
 
 struct SCard { //카드를 구성하는 구조체 
 	char Name[7];
-	SCard() { Name[2]=0; }
+	SCard() { Name[0]=0; }
 	SCard(const char *pName) {
 		strcpy(Name, pName);
 	}
 //카드객체의 알파벳이 들어가 알파벳에 값을 넣어주는 함수  
 	int GetNumber() const {
-		if (isdigit(Name[2])) return Name[2]-'0';
-		if (Name[2]=='O') return 10;
-		if (Name[2]=='J') return 11;
-		if (Name[2]=='Q') return 12;
-		if (Name[2]=='K') return 13;
+		if (isdigit(Name[0])) return Name[0]-'0';
+//		if (Name[2]=='O') return 10;
+		if (Name[0]=='J') return 11;
+		if (Name[0]=='Q') return 12;
+		if (Name[0]=='K') return 13;
 	};
 //카드객체에 특수문자가 들어가 특수문자에 값을 넣어주는 함수  
 	int GetKind() const {
@@ -51,10 +51,10 @@ struct SCard { //카드를 구성하는 구조체
 };
 
 SCard GCard[MaxCard]={
-	"| 1♠|", "| 2♠|", "| 3♠|", "| 4♠|", "| 5♠|", "| 6♠|", "| 7♠|", "| 8♠|", "| 9♠|", "|1O♠|", "| J♠|", "| Q♠|", "| K♠|",
-	"| 1♣|", "| 2♣|", "| 3♣|", "| 4♣|", "| 5♣|", "| 6♣|", "| 7♣|", "| 8♣|", "| 9♣|", "|1O♣|", "| J♣|", "| Q♣|", "| K♣|",
-	"| 1♥|", "| 2♥|", "| 3♥|", "| 4♥|", "| 5♥|", "| 6♥|", "| 7♥|", "| 8♥|", "| 9♥|", "|1O♥|", "| J♥|", "| Q♥|", "| K♥|", 
-	"| 1◆|", "| 2◆|", "| 3◆|", "| 4◆|", "| 5◆|", "| 6◆|", "| 7◆|", "| 8◆|", "| 9◆|", "|1O◆|", "| J◆|", "| Q◆|", "| K◆|"
+	"1♠", "2♠", "3♠", "4♠", "5♠", "6♠", "7♠", "8♠", "9♠", "10♠", "J♠", "Q♠", "K♠",
+	"1♣", "2♣", "3♣", "4♣", "5♣", "6♣", "7♣", "8♣", "9♣", "10♣", "J♣", "Q♣", "K♣",
+	"1♥", "2♥", "3♥", "4♥", "5♥", "6♥", "7♥", "8♥", "9♥", "10♥", "J♥", "Q♥", "K♥", 
+	"1◆", "2◆", "3◆", "4◆", "5◆", "6◆", "7◆", "8◆", "9◆", "10◆", "J◆", "Q◆", "K◆"
 };
 
 class CCardSet {
@@ -64,7 +64,6 @@ class CCardSet {
 //카드를 두는 좌표값 
 		const int sx,sy;
 		CCardSet(int asx,int asy) : sx(asx), sy(asy) { Num=0;}
-		
 	public:
 // 카드를 하나도 없는 상태로 집합을 생성  
 		int GetNum() { return Num;} 
@@ -81,7 +80,7 @@ class CCardSet {
 //카드를 정렬 
 void CCardSet::insertCard(SCard C) {
 	int i;
-	 
+
 	for (i=0;i<Num;i++) {
 		if (C < Card[i]) break;
 	}
@@ -131,9 +130,25 @@ class CDeck : public CCardSet {
     }
 
 };
+//플레이어
+class CPlayer : public CCardSet {
+public:
+	CPlayer(int asx,int asy) : CCardSet(asx,asy) { ; }
+	void Draw(bool MyTurn) {
+		int i,x;
+		for (i=0,x=sx;i<Num;i++,x+=CardGap) {
+			gotoxy(x,sy);
+			cout << Card[i];
+			if (MyTurn) {
+					gotoxy(x,sy+1);
+				cout << '[' << i+1 << ']';
+			}
+		}
+	}
+};
 
 int main() {
-	
+
 // 카드 객체 출력 	 
 	for(int i=0; i<52; i++) {
 		cout << GCard[i];
@@ -142,6 +157,7 @@ int main() {
 			cout <<"\n";
 		};
 	}
+
 //카드크기 비교  
 	int a = 0; //카드 1 
 	int b = 9; //카드 10
@@ -159,17 +175,24 @@ int main() {
 	} else {
 		cout << GCard[a];
 	}
+
 //랜덤으로 숫자 나오게 하는 부분중 일부분 
 	int n;
 	srand((unsigned int)time(NULL));
 	cout << "\n 랜덤으로 생성되는 카드:";
  	cout << GCard[rand()%52] <<endl;
- 	
 
 //카드패를 놓아두는 곳    
-	CDeck *Deck = new CDeck(40,20);
+	CDeck *Deck = new CDeck(20,20);
 	Deck->Draw();
-//    cout << Deck.Draw()<<endl;
-	    
+//    cout << Deck.Draw)<<endl; 
+//플레이어
+	CPlayer *Player = new CPlayer(30,20);
+	Player->Draw(12);
+//나중에 카드의 값 들을 숫자로 나타내는 부분
+	int t;
+	t = atoi(GCard[4].Name);
+	printf("%d\n", t);
+
 	return 0;
 };
