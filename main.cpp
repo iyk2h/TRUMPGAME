@@ -144,14 +144,14 @@ class CDeck : public CCardSet {
         cout << "|???| ";
     }
 };
-
-class Copy : public CDeck {
+/*
+class CCopy : public CDeck {
 		public :
 		void setname(string name) {
-			this->name = name;
+			this->name = name; 
 		}
 };
-
+*/
 //플레이어
 class CPlayer : public CCardSet {
 public:
