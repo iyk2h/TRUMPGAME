@@ -3,8 +3,11 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
+#include <stack>
 #include <cstdlib>
 #include <ctime>
+#define CMAX 52
+#define TMAX 50
 
 using namespace std;
 
@@ -17,6 +20,10 @@ struct SCard { //카드를 구성하는 구조체
 	SCard(const char *pName) {
 		strcpy(Name, pName);
 	}
+	string getName() {
+			return string(this->Name); //출력을 위한 도구
+	}
+	
 //카드객체의 알파벳이 들어가 알파벳에 값을 넣어주는 함수  
 	int GetNumber() const {
 		if (isdigit(Name[0])) return Name[0]-'0';
@@ -56,6 +63,15 @@ SCard GCard[MaxCard]={
 	"1♥", "2♥", "3♥", "4♥", "5♥", "6♥", "7♥", "8♥", "9♥", "10♥", "J♥", "Q♥", "K♥", 
 	"1◆", "2◆", "3◆", "4◆", "5◆", "6◆", "7◆", "8◆", "9◆", "10◆", "J◆", "Q◆", "K◆"
 };
+//카드패 스택 
+class DStack {
+	char stack[CMAX];
+	int tos;
+public :
+	void init();
+	void push(char *ch);
+	char pop();
+};
 
 class CCardSet {
 	protected:
@@ -65,6 +81,7 @@ class CCardSet {
 		const int sx,sy;
 		CCardSet(int asx,int asy) : sx(asx), sy(asy) { Num=0;}
 	public:
+		
 // 카드를 하나도 없는 상태로 집합을 생성  
 		int GetNum() { return Num;} 
 		SCard GetCard(int idx) { return Card[idx];}
@@ -97,9 +114,7 @@ SCard CCardSet::RemoveCard(int idx) {
 	return C;
 }
 //gotoxy함수 
-void gotoxy(int sx, int sy) 
-{
-
+void gotoxy(int sx, int sy) {
 COORD Pos = {sx - 1, sy - 1};
 SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Pos);
 } 
@@ -128,8 +143,15 @@ class CDeck : public CCardSet {
 		gotoxy(sx,sy);
         cout << "|???| ";
     }
-
 };
+
+class Copy : public CDeck {
+		public :
+		void setname(string name) {
+			this->name = name;
+		}
+};
+
 //플레이어
 class CPlayer : public CCardSet {
 public:
@@ -148,10 +170,12 @@ public:
 };
 
 int main() {
+	
+	
 
 // 카드 객체 출력 	 
 	for(int i=0; i<52; i++) {
-		cout << GCard[i];
+		cout << GCard[rand()%52];
 		cout << " ";
 		if ((i+1) % 13 == 0) {
 			cout <<"\n";
@@ -176,14 +200,9 @@ int main() {
 		cout << GCard[a];
 	}
 
-//랜덤으로 숫자 나오게 하는 부분중 일부분 
-	int n;
-	srand((unsigned int)time(NULL));
-	cout << "\n 랜덤으로 생성되는 카드:";
- 	cout << GCard[rand()%52] <<endl;
-
 //카드패를 놓아두는 곳    
 	CDeck *Deck = new CDeck(20,20);
+	Deck->Shuffle();
 	Deck->Draw();
 //    cout << Deck.Draw)<<endl; 
 //플레이어
@@ -191,8 +210,48 @@ int main() {
 	Player->Draw(12);
 //나중에 카드의 값 들을 숫자로 나타내는 부분
 	int t;
-	t = atoi(GCard[4].Name);
-	printf("%d\n", t);
+	t = atoi(GCard[9].Name);
+	printf("\n%d\n", t);
 
+	CDeck *TDeck = new CDeck(22,22);
+	TDeck->Shuffle();
+	int i;
+	for (int u=0;u<52;u++) {
+		cout << SCard();
+	};
+
+//카드의 둘 뒤치를 선정후 섞어주고 택을 만듬
+	CDeck *cDeck = new CDeck(21, 30);
+	cDeck->Shuffle();
+	cout <<"Deck 카드 \n" ;
+	for(int i =0;i<52;i++) {
+	cout << cDeck->GetCard(i).getName();
+	};
+/*	R *r = new R
+	
+	public :
+		void setname(string name) {
+			this->name = name;
+		}
+	
+	R.setName(cDeck->GetCard(0).getName())
+	
+	RemoveCar
+*/	
+//택스텍 출력
+//	DStack ds1;
+//	int k;
+//	ds1.init() ;
+//	char h[];
+//	for(int i=0;i<CMAX;i++) {
+//	char c[2];
+//	c[0] = 1;
+//	ds1.push('12');
+//	*h = GCard[1];
+//	};
+//	for (int i=0;i<52;i++) cout <<ds1.pop() <<endl;
+//	SCard *p;
+//	p = Gcard;
 	return 0;
+
 };
