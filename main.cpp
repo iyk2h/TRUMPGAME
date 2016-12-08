@@ -13,6 +13,8 @@
 
 using namespace std;
 
+typedef enum { NOCURSOR, SOLIDCURSOR, NORMALCURSOR } CURSOR_TYPE;
+
 const int MaxCard=52;
 const int CardGap=4;
 
@@ -36,9 +38,9 @@ struct SCard { //카드를 구성하는 구조체
 	};
 //카드객체에 특수문자가 들어가 특수문자에 값을 넣어주는 함수  
 	int GetKind() const {
-		if (strcmp(Name+5, "♠")==0) return 0;
-		else if (strcmp(Name+5, "♣")==0) return 1;
-		else if (strcmp(Name+5, "♥")==0) return 2;
+		if (strcmp(Name+2, "♠")==0) return 0;
+		else if (strcmp(Name+2, "♣")==0) return 1;
+		else if (strcmp(Name+2, "♥")==0) return 2;
 		else return 3;
 	}
 	friend ostream &operator <<(ostream &c, const SCard &C) {
@@ -78,17 +80,19 @@ class CCardSet {
 		int GetNum() { return Num;} 
 		SCard GetCard(int idx) { return Card[idx];}
 		void Reset() {
-			for (int i=0;i<MaxCard;i++) Card[i].Name[2]=0;
+			for (int i=0;i<MaxCard;i++) Card[i].Name[0]=0;
 			Num=0;
 		}
-		void insertCard(SCard C);
+		void InsertCard(SCard C);
 		SCard RemoveCard(int idx);
 		int FindSameCard(SCard C,int *pSame);
 		int FindFirstCard(const char *pName);
 };
 //카드를 정렬 
-void CCardSet::insertCard(SCard C) {
+void CCardSet::InsertCard(SCard C) {
 	int i;
+	
+	if (C.Name[0] == 0) return;
 	for (i=0;i<Num;i++) {
 		if (C < Card[i]) break;
 	}
@@ -99,12 +103,16 @@ void CCardSet::insertCard(SCard C) {
 //플레이어가 카드를 내거나 데크에서 한장을 나누어줄때 쓸 함수 정의 
 SCard CCardSet::RemoveCard(int idx) {
 	assert(idx < Num);
+	printf("a");
 	SCard C=Card[idx];
+	printf("b");
 	memmove(&Card[idx],&Card[idx+1],sizeof(SCard)*(Num-idx-1));
 	Num--;
+	printf("c");
 	return C;
+	printf("d");
 }
-//gotoxy함수
+//gotoxy함수 
 void gotoxy(int sx, int sy) {
 COORD Pos = {sx - 1, sy - 1};
 SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Pos);
@@ -117,7 +125,7 @@ void delay(clock_t sleep)
     for(;;){              /* 무한루프를 돌린다. */ 
         el = clock();  /* 현재까지 프로그램이 실행된 TICK */
         if((el - cur) > sleep)
-            break	;
+            break;
     }
 }
 //randomize 함수 
@@ -130,7 +138,8 @@ void randomize(void) {
 class CDeck : public CCardSet {
 	public:
 	CDeck(int asx,int asy) : CCardSet(asx,asy) { ; }
-	    void Shuffle() {
+	    
+		void Shuffle() {
 	        int i,n;
 	       // srand((unsigned int)time(NULL));
 	    	for (i=0;i<MaxCard;i++) {
@@ -151,7 +160,7 @@ class CDeck : public CCardSet {
         cout << "|???| ";
     }
 };
- 
+
 /////////////////////////////////////////////여기여기여기; ㅕ아ㅓㄴ오ㅓ라ㅓ;모댜ㅓㅗ휸머ㅏㅇ류ㅣㅂ저ㅏㅗㅠㄷㄹ 
 /*
 class CCopy : public CDeck {
@@ -210,11 +219,11 @@ void Initialize() {
      int i;
      Deck.Shuffle();
      for (i=0;i<8;i++) {
-         Down.insertCard(Deck.Pop());
-         Up.insertCard(Deck.Pop());
-         if (i < 4) Blanket.insertCard(Deck.Pop());
-	 }
-};
+         Down.InsertCard(Deck.Pop());
+         Up.InsertCard(Deck.Pop());
+         if (i < 4) Blanket.InsertCard(Deck.Pop());
+	 }	 
+}
 
 void DrawScreen() {
      system("cls");
@@ -258,15 +267,15 @@ int main() {
      int arSame[4],SameNum;
      char Mes[256];
      CPlayer *Turn;
-//     CPlayerPae *TurnPae,*OtherPae;
+     CPlayerPae *TurnPae,*OtherPae;
      int UserIdx,UserSel,DeckSel;
      SCard UserCard, DeckCard;
      bool UserTriple, DeckTriple;
      int nSnatch;
      int NewScore;
      
-     randomize();
-	Initialize();
+    randomize();
+//	Initialize();
 	DrawScreen();
           if (DownTurn) {
               Turn=&Down;
@@ -282,9 +291,9 @@ int main() {
           ch=InputInt(Mes,0,Turn->GetNum());
           if (ch == 0) {
               if (InputInt("정말 끝낼겁니까?(0:예,1:아니오)",0,1)==0) ;
-                //   return ;
-             // else
-                //   continue;
+                   return NULL;
+              //else
+              //     return 1;
           }
 //카드크기 비교  
 	int a = 0; //카드 1 
