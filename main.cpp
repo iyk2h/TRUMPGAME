@@ -208,11 +208,16 @@ public:
 	bool IsEmpty() { return Num==0; }
 	bool IsNotLast() { return Num > 1; }
 	void Draw(bool bFlip) {
-		gotoxy(18,15);
-		cout << "??? " << (bFlip ? Card[Num-1].Name:"   ");
+		gotoxy(13,9);
+		cout << "??? " /*<< (bFlip ? Card[Num-1].Name:"   ")*/; //데크 옆에 어떤 카드가 나오는지 
 	}
 };
 
+//색함수 
+void color (int col) 
+{ 
+   SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),col); //색 함수 
+} 
 // 게임을 하는 플레이어
 class CPlayer : public CCardSet {
 public:
@@ -224,7 +229,9 @@ public:
 			cout << Card[i];
 			if (MyTurn) {
 				gotoxy(x,sy+1);
+				color(13);
                 cout << '[' << i+1 << ']';
+                color(15);
 			}
 		}
 	}
@@ -279,19 +286,6 @@ public:
 	void Draw() {
 		place::Draw(false);
 	}
-	void DrawSelNum(int *pSame) {
-		int n;
-		int *p;
-		for (n=1,p=pSame;*p!=-1;p++,n++) {
-			gotoxy(sx+*p*CardGap,sy-1);
-			cout << '[' << n << ']';
-
-		}
-	}
-	void DrawTempCard(int idx,SCard C) {
-		gotoxy(sx+idx*CardGap,sy+1);
-		cout << C;
-	}
 };
 // 게임이 진행되는 담요2
 class CBlanket2: public place {
@@ -301,18 +295,6 @@ public:
 		place::Draw(false);
 
 	}
-	void DrawSelNum(int *pSame) {
-		int n;
-		int *p;
-		for (n=1,p=pSame;*p!=-1;p++,n++) {
-			gotoxy(sx+*p*CardGap,sy-1);
-			cout << '[' << n << ']';
-		}
-	}
-	void DrawTempCard(int idx,SCard C) {
-		gotoxy(sx+idx*CardGap,sy+1);
-		cout << C;
-	}
 };
 // 게임이 진행되는 담요3
 class CBlanket3: public place {
@@ -320,18 +302,6 @@ public:
 	CBlanket3(int asx,int asy) : place(asx,asy) { ; }
 	void Draw() {
 		place::Draw(false);
-	}
-	void DrawSelNum(int *pSame) {
-		int n;
-		int *p;
-		for (n=1,p=pSame;*p!=-1;p++,n++) {
-			gotoxy(sx+*p*CardGap,sy-1);
-			cout << '[' << n << ']';
-		}
-	}
-	void DrawTempCard(int idx,SCard C) {
-		gotoxy(sx+idx*CardGap,sy+1);
-		cout << C;
 	}
 };
 // 게임이 진행되는 담요4
@@ -341,20 +311,7 @@ public:
 	void Draw() {
 		place::Draw(false);
 	}
-	void DrawSelNum(int *pSame) {
-		int n;
-		int *p;
-		for (n=1,p=pSame;*p!=-1;p++,n++) {
-			gotoxy(sx+*p*CardGap,sy-1);
-			cout << '[' << n << ']';
-		}
-	}
-	void DrawTempCard(int idx,SCard C) {
-		gotoxy(sx+idx*CardGap,sy+1);
-		cout << C;
-	}
 };
-
 // 함수 원형
 void Initialize();
 void DrawScreen();
@@ -362,12 +319,12 @@ void OutPrompt(const char *Mes,int Wait=0);
 int InputInt(const char *Mes, int start, int end);
 
 // 전역 변수
-CDeck Deck(5,9);
+CDeck Deck(5,1);
 CPlayer South(5,20), North(5,2);
-CBlanket Blanket(5,11);
-CBlanket Blanket2(10,11);
-CBlanket Blanket3(5,16);
-CBlanket Blanket4(10,16);
+CBlanket Blanket(5,6);
+CBlanket Blanket2(20,6);
+CBlanket Blanket3(5,12);
+CBlanket Blanket4(20,12);
 bool SouthTurn;
 
 // 프로그램을 총지휘하는 main 함수
@@ -390,10 +347,15 @@ int main() {
 		DrawScreen();
 		if (SouthTurn) {
 			Turn=&South;
+			 
 		} else {
 			Turn=&North;
 		}
-		sprintf(Mes,"내고 싶은 화투를 선택하세요(1~%d,0:종료) ",Turn->GetNum());
+
+	for(int t=0;t<2;t++) {
+		Turn->InsertCard(Deck.Pop());
+		color(13);
+		sprintf(Mes,"내고 싶은 카드를 선택하세요(1~%d,0:종료) ",Turn->GetNum());
   		ch=InputInt(Mes,0,Turn->GetNum());
 		if (ch == 0) {
 			if (InputInt("정말 끝낼겁니까?(0:예,1:아니오)",0,1)==0) 
@@ -401,15 +363,17 @@ int main() {
 			else 
 				continue;
 		}
-		
 		// 플레이어가 카드를 한장 낸다.
 		UserTriple=DeckTriple=false;
 		UserIdx=ch-1;
 		UserCard=Turn->GetCard(UserIdx);
 		//SameNum=Blanket.FindSameCard(UserCard,arSame);
+		color(15);
 		DrawScreen();
-		sprintf(Mes,"카드를 올리고 싶은 택의 번호를 선택하세요(1~4) ",Turn->GetNum());
+		color(11);
+		sprintf(Mes,"카드를 올리고 싶은 놓여진 대크의 번호를 선택하세요(1~4) ",Turn->GetNum());
 		a=InputInt(Mes,0,Turn->GetNum());
+		color(15);
 		switch (a) {
 		case 1:
 			UserSel=-1;
@@ -432,52 +396,15 @@ int main() {
 			DrawScreen();
 			break;
 		}
+
+	}
 		// 데크에서 한장을 뒤집는다.
 		Deck.Draw(true);
 		delay(Speed);
-		DeckCard=Deck.Pop();
-		//SameNum=Blanket.FindSameCard(DeckCard,arSame);
-		switch (SameNum) {
-		case 0:
-			DeckSel=-1;
-			break;
-/*		case 1:
-			DeckSel=arSame[0];
-			if (DeckSel == UserSel) {
-				if (Deck.IsNotLast()) {
-					Blanket.InsertCard(DeckCard);
-					Blanket.InsertCard(Turn->RemoveCard(UserIdx));
-					OutPrompt("설사했습니다.",PromptSpeed);
-					continue;
-				} else {
-					DeckSel=-1;
-				}
-			}
-			break;
-*/
-		case 2:
-			if (UserSel == arSame[0]) {
-				DeckSel=arSame[1];
-			} else if (UserSel == arSame[1]) {
-				DeckSel=arSame[0];
-			} else {
-				if (Blanket.GetCard(arSame[0]) == Blanket.GetCard(arSame[1])) {
-					DeckSel=arSame[0];
-				} else {
-					Blanket.DrawSelNum(arSame);
-					sprintf(Mes,"어떤 카드를 선택하시겠습니까?(1~%d)",SameNum);
-					DeckSel=arSame[InputInt(Mes,1,SameNum)-1];
-				}
-			}
-			break;
-		case 3:
-			DeckSel=arSame[1];
-			DeckTriple=true;
-			break;
-		}
-		if (DeckSel != -1) {
-			Blanket.DrawTempCard(DeckSel,DeckCard);
-		}
+//		South.InsertCard(Deck.Pop());
+//		North.InsertCard(Deck.Pop());
+	//	DeckCard=Deck.Pop();
+
 		Deck.Draw(false);
 		delay(Speed);
 	}
@@ -489,7 +416,7 @@ void Initialize() {
 	int i;
 
 	Deck.Shuffle();
-	for (i=0;i<8;i++) {
+	for (i=0;i<10;i++) {
 		South.InsertCard(Deck.Pop());
 		North.InsertCard(Deck.Pop());
 		if (i < 1) Blanket.InsertCard(Deck.Pop());
@@ -504,21 +431,28 @@ void DrawScreen() {
 	South.Draw(SouthTurn);
 	North.Draw(!SouthTurn);
 	Blanket.Draw();
-	gotoxy(5,12);
+	gotoxy(5,7);
+	color(11);
 	cout << '[' << 1 << ']';
+	color(15);
 	Blanket2.Draw();
-	gotoxy(10,12);
+	gotoxy(20,7);
+	color(11);
 	cout << '[' << 2 << ']';
+	color(15);
 	Blanket3.Draw();
-	gotoxy(5,17);
+	gotoxy(5,13);
+	color(11);
 	cout << '[' << 3 << ']';
+	color(15);
 	Blanket4.Draw();
-	gotoxy(10,17);
+	gotoxy(20,13);
+	color(11);
 	cout << '[' << 4 << ']';
+	color(15);
 //lanket.Draw();
 	Deck.Draw(false);
-}
-
+} 
 void OutPrompt(const char *Mes,int Wait/*=0*/) {
 	gotoxy(5,23);
 	for (int i=5;i<79;i++) { cout << ' '; }
@@ -545,5 +479,3 @@ int InputInt(const char *Mes, int start, int end) {
 		OutPrompt("무효한 번호입니다. 지정한 범위에 맞게 다시 입력해 주세요.");
 	}
 }
-
-
