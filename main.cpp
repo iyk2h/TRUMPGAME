@@ -361,10 +361,6 @@ CBlanket3 Blanket3(5,12);
 CBlanket4 Blanket4(20,12);
 bool SouthTurn;
 
-
-
-
-
 	int problum;
 // 프로그램을 총지휘하는 main 함수
 int main() {
@@ -514,7 +510,8 @@ void DrawScreen() {
    color(15);
 //lanket.Draw();
    Deck.Draw(false);
-   cout << problum;
+   if(problum == 0) cout << " ";
+   else cout << problum;
 } 
 void OutPrompt(const char *Mes,int Wait/*=0*/) {
    gotoxy(5,23);
