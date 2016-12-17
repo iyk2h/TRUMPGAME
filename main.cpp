@@ -361,6 +361,10 @@ CBlanket3 Blanket3(5,12);
 CBlanket4 Blanket4(20,12);
 bool SouthTurn;
 
+
+
+
+
 	int problum;
 // 프로그램을 총지휘하는 main 함수
 int main() {
@@ -462,10 +466,15 @@ int main() {
          }   
       }
       // 데크에서 한장을 뒤집는다.
+      int I;
+      I = 0;
+      if (I<27) {
       Turn->InsertCard(Deck.Pop());
       Turn->InsertCard(Deck.Pop());
+   	  }
+   	  I++;
    }
-//   DrawScreen();
+   DrawScreen();
    clrscr;
    OutPrompt("게임이 끝났습니다.",0);
    
@@ -512,7 +521,7 @@ void DrawScreen() {
    Deck.Draw(false);
    if(problum == 0) cout << " ";
    else cout << problum;
-} 
+}
 void OutPrompt(const char *Mes,int Wait/*=0*/) {
    gotoxy(5,23);
    for (int i=5;i<79;i++) { cout << ' '; }
@@ -539,4 +548,5 @@ int InputInt(const char *Mes, int start, int end) {
       OutPrompt("무효한 번호입니다. 지정한 범위에 맞게 다시 입력해 주세요.");
    }
 }
+
 
