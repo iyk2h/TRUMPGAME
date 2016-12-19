@@ -340,7 +340,7 @@ int CIn() {
 	for (;;) {
 		cin >> gNum;
 		
-		if(20< gNum && gNum <37) {
+		if(19< gNum && gNum <38) {
 			return gNum;
 		}else  
 		cout << "범위 안의 수를 입력 바랍니다.";
@@ -468,10 +468,10 @@ int main() {
       // 데크에서 한장을 뒤집는다.
       int I;
       I = 0;
-      if (I<27) {
+      if (I<28) {
       Turn->InsertCard(Deck.Pop());
       Turn->InsertCard(Deck.Pop());
-   	  }
+   	  } else cout <<" ";
    	  I++;
    }
    DrawScreen();
